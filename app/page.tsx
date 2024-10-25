@@ -108,8 +108,7 @@ export default function Component() {
 
           <div className="mb-4 lg:mb-6">
             <h2 className="text-lg lg:text-xl font-bold mb-2 text-gray-900">Details Submitted...</h2>
-            <div className="space-y-1">
-              {/* Replace the grid with individual rows */}
+            <div className="space-y-0.5">
               {[
                 { label: 'Email Call? Yes Or No:', value: 'Yes' },
                 { label: 'Call Status:', value: 'New' },
@@ -121,13 +120,13 @@ export default function Component() {
                 { label: 'CHECK TO ADD TASK FOR RETURN CALL/FOLLOW UP:', value: '' }
               ].map((field, index) => (
                 <div key={index} className="flex">
-                  <div className="w-1/2 bg-gray-100 p-4">
+                  <div className="w-1/2 bg-gray-100 p-2">
                     <span className="text-gray-900 font-medium">{field.label}</span>
                   </div>
                   <div className="w-1/2">
                     <input 
                       defaultValue={field.value}
-                      className="w-full p-4 border rounded text-gray-900"
+                      className="w-full p-2 border text-gray-900"
                     />
                   </div>
                 </div>
