@@ -26,7 +26,7 @@ const MOCK_CALL_LOGS = [
   },
   {
     issue: 'POS INTEGRATION NOT CONNECTING TO PAYMENT GATEWAY',
-    actionTaken: 'VERIFIED API CREDENTIALS. RESET MERCHANT GATEWAY CONNECTION. TESTED TRANSACTION FLOW. CONFIRMED SUCCESSFUL INTEGRATION.'
+    actionTaken: 'VERIFIED CREDENTIALS. RESET MERCHANT GATEWAY CONNECTION. TESTED TRANSACTION FLOW. CONFIRMED SUCCESSFUL INTEGRATION.'
   },
   {
     issue: 'CUSTOMER REPORTED CHARGEBACK DISPUTE PROCESS INQUIRY',
@@ -43,9 +43,18 @@ export default function Component() {
   const [generationTimer, setGenerationTimer] = useState(7);
   const [generationsLeft, setGenerationsLeft] = useState(7);
   const [showWarning, setShowWarning] = useState(false);
+  const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
 
   const generateCallLog = () => {
+    // Check both conditions: generations left and if current log already has generation
     if (generationsLeft <= 0) {
+      setShowWarning(true);
+      setTimeout(() => setShowWarning(false), 3000);
+      return;
+    }
+
+    if (hasGeneratedCurrentLog) {
+      // Show a different warning for attempting to regenerate same call log
       setShowWarning(true);
       setTimeout(() => setShowWarning(false), 3000);
       return;
@@ -61,11 +70,17 @@ export default function Component() {
           const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
           setCallLog(MOCK_CALL_LOGS[randomIndex]);
           setGenerationsLeft(prev => prev - 1);
+          setHasGeneratedCurrentLog(true); // Mark this call log as generated
           return 7;
         }
         return prev - 1;
       });
     }, 1000);
+  };
+
+  const resetCallLog = () => {
+    setCallLog({ issue: '', actionTaken: '' });
+    setHasGeneratedCurrentLog(false);
   };
 
   return (
@@ -135,14 +150,11 @@ export default function Component() {
           </div>
 
           <div className="space-y-3 lg:space-y-4 relative">
-            {isGenerating && (
-              <div className="text-blue-600 mb-2">
-                Please wait while we fetch and summarize your call log ({generationTimer}s)
-              </div>
-            )}
             {showWarning && (
               <div className="text-red-600 mb-2">
-                You have reached the maximum number of generations for today.
+                {generationsLeft <= 0 
+                  ? "You have reached the maximum number of generations for today."
+                  : "You have already generated content for this call log. Please submit or clear the form to generate a new one."}
               </div>
             )}
             <div className="text-gray-600 mb-2">
@@ -159,15 +171,34 @@ export default function Component() {
               />
               <div className="absolute top-[-1.2rem] right-0 flex space-x-2 mr-1">
                 <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: isGenerating ? 1 : 1.05 }}
+                  whileTap={{ scale: isGenerating ? 1 : 0.95 }}
                 >
                   <button 
                     onClick={generateCallLog} 
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
-                    title="Select to summarize call"
+                    disabled={isGenerating || hasGeneratedCurrentLog}
+                    className={`
+                      px-4 py-2 rounded
+                      ${(isGenerating || hasGeneratedCurrentLog)
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-green-500 hover:bg-green-600'
+                      }
+                      text-white
+                    `}
+                    title={
+                      isGenerating 
+                        ? "Generation in progress..."
+                        : hasGeneratedCurrentLog 
+                          ? "Already generated for this call log"
+                          : "Select to summarize call"
+                    }
                   >
-                    GENERATE CALL LOG
+                    {isGenerating 
+                      ? `GENERATING... (${generationTimer}s)` 
+                      : hasGeneratedCurrentLog 
+                        ? 'ALREADY GENERATED'
+                        : 'GENERATE CALL LOG'
+                    }
                   </button>
                 </motion.div>
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Add Call Log</button>
