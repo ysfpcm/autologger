@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Autologger
+
+Autologger is a call log management tool built using Next.js, React, TailwindCSS, and Framer Motion. It allows users to generate and manage call logs for customer service and technical support interactions. 
+
+## Features
+
+- **Generate Call Logs**: Automatically generate predefined call logs.
+- **Call Management**: Manage different types of customer calls including technical support, customer service, risk management, and ISO agent calls.
+- **Limited Call Log Generation**: Users are limited to generating call logs a specified number of times daily.
+- **Responsive UI**: Designed with TailwindCSS for a seamless, responsive user experience.
+
+## Technologies Used
+
+- **Next.js**: Version 15.0.1
+- **React**: Version 18.3.0
+- **TailwindCSS**: Version 3.4.1
+- **Framer Motion**: Version 11.11.10
+- **Radix UI**: For component composition.
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
+Ensure that you have the following installed:
+
+- [Node.js](https://nodejs.org/en/download/) (v14.x or later)
+- npm (comes with Node.js) or [yarn](https://classic.yarnpkg.com/en/docs/install) as a package manager.
+
+### Installation
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/ysfpcm/autologger.git
+Navigate to the project directory:
+
+bash
+Copy code
+cd autologger
+Install dependencies:
+
+Using npm:
+
+bash
+Copy code
+npm install
+Or using yarn:
+
+bash
+Copy code
+yarn install
+Running the Development Server
+To start the development server, run the following command:
+
+bash
+Copy code
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The app will be available at http://localhost:3000.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Building for Production
+To create a production build, run:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+bash
+Copy code
+npm run build
+This will generate optimized static files for your application.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deployment
+You can easily deploy the app to Vercel using the Vercel CLI or the dashboard.
 
-## Learn More
+Note:
+Ensure that the react and react-dom versions are compatible with other dependencies like framer-motion. For this project, use react@18.x.
 
-To learn more about Next.js, take a look at the following resources:
+Project Structure
+/pages: Contains the main Next.js pages.
+/public: Static assets like images.
+/components: Reusable UI components.
+/styles: Global styles and TailwindCSS configuration.
+Usage
+Generate Call Log: Click the "Generate Call Log" button to automatically generate a new call log with predefined issues and resolutions.
+Edit Call Log: Manually edit the issue or action taken for any generated call log.
+Limit Generations: Each user is limited to a set number of call log generations per day, after which a warning is displayed.
+Dependencies
+Here are the major dependencies used in this project:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Next.js: A React framework for production.
+React: JavaScript library for building user interfaces.
+TailwindCSS: A utility-first CSS framework for styling.
+Framer Motion: A production-ready motion library for React.
+Radix UI: For handling component composition.
+Contributing
+Fork the project.
+Create your feature branch (git checkout -b feature/new-feature).
+Commit your changes (git commit -am 'Add some feature').
+Push to the branch (git push origin feature/new-feature).
+Open a Pull Request.
+License
+This project is licensed under the MIT License. See the LICENSE file for more details.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Author
+Marc
+GitHub Profile
 
-## Deploy on Vercel
+markdown
+Copy code
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Key Sections:
+- **Project Overview**: Describes the project and its features.
+- **Installation and Setup**: Steps to get the project running locally.
+- **Usage**: Brief description of the call log generation process.
+- **Technologies**: Lists the technologies used in the project.
+- **Contributing**: Basic guidelines for contributing to the project.
+- **License**: A placeholder for licensing information. You can add an actual license file if needed.
