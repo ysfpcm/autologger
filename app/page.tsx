@@ -201,7 +201,15 @@ export default function Component() {
                     }
                   </button>
                 </motion.div>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Add Call Log</button>
+                <button 
+                  onClick={resetCallLog} 
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                >
+                  Clear Form
+                </button>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                  Add Call Log
+                </button>
               </div>
             </div>
             <div className="mt-6">
