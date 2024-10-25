@@ -79,7 +79,7 @@ export default function Component() {
           <div className="mb-4 lg:mb-6">
             <h2 className="text-lg lg:text-xl font-bold mb-2 text-gray-900">Merchant Info</h2>
             <div className="bg-gray-100 p-4 rounded">
-              <p className="text-gray-900">5309612620099668</p>
+              <p className="text-gray-900">53096111000000000</p>
               <p className="text-gray-900">JOHN DOE</p>
               <p className="text-gray-900">123 MAIN STREET</p>
               <p className="text-gray-900">ANYTOWN, NY 12345</p>
