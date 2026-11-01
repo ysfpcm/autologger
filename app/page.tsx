@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 
 const MOCK_CALL_LOGS = [
@@ -44,8 +44,19 @@ export default function Component() {
   const [generationsLeft, setGenerationsLeft] = useState(7);
   const [showWarning, setShowWarning] = useState(false);
   const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
+  const generationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => () => {
+    if (generationInterval.current !== null) {
+      clearInterval(generationInterval.current);
+    }
+  }, []);
 
   const generateCallLog = () => {
+    if (generationInterval.current !== null) {
+      return;
+    }
+
     // Check both conditions: generations left and if current log already has generation
     if (generationsLeft <= 0) {
       setShowWarning(true);
@@ -61,24 +72,33 @@ export default function Component() {
     }
 
     setIsGenerating(true);
-    const timer = setInterval(() => {
-      setGenerationTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsGenerating(false);
-          setGenerationTimer(7);
-          const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
-          setCallLog(MOCK_CALL_LOGS[randomIndex]);
-          setGenerationsLeft(prev => prev - 1);
-          setHasGeneratedCurrentLog(true); // Mark this call log as generated
-          return 7;
+    let secondsRemaining = 7;
+    generationInterval.current = setInterval(() => {
+      secondsRemaining -= 1;
+      if (secondsRemaining === 0) {
+        if (generationInterval.current !== null) {
+          clearInterval(generationInterval.current);
+          generationInterval.current = null;
         }
-        return prev - 1;
-      });
+        setIsGenerating(false);
+        setGenerationTimer(7);
+        const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
+        setCallLog(MOCK_CALL_LOGS[randomIndex]);
+        setGenerationsLeft(prev => prev - 1);
+        setHasGeneratedCurrentLog(true);
+      } else {
+        setGenerationTimer(secondsRemaining);
+      }
     }, 1000);
   };
 
   const resetCallLog = () => {
+    if (generationInterval.current !== null) {
+      clearInterval(generationInterval.current);
+      generationInterval.current = null;
+    }
+    setIsGenerating(false);
+    setGenerationTimer(7);
     setCallLog({ issue: '', actionTaken: '' });
     setHasGeneratedCurrentLog(false);
   };
