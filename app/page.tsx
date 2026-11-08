@@ -110,7 +110,7 @@ export default function Component() {
           <h1 className="text-xl lg:text-2xl font-semibold">Electronic Payments (EPI) - View Call</h1>
         </header>
         
-        <div className="flex-1 p-3 lg:p-6">
+        <form className="flex-1 p-3 lg:p-6" onReset={resetCallLog} onSubmit={(event) => event.preventDefault()}>
           <div className="mb-4 lg:mb-6">
             <h2 className="text-lg lg:text-xl font-bold mb-2 text-gray-900">Merchant Info</h2>
             <div className="bg-gray-100 p-4 rounded">
@@ -195,6 +195,7 @@ export default function Component() {
                   whileTap={{ scale: isGenerating ? 1 : 0.95 }}
                 >
                   <button 
+                    type="button"
                     onClick={generateCallLog} 
                     disabled={isGenerating || hasGeneratedCurrentLog}
                     className={`
@@ -222,12 +223,12 @@ export default function Component() {
                   </button>
                 </motion.div>
                 <button 
-                  onClick={resetCallLog} 
+                  type="reset"
                   className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
                 >
                   Clear Form
                 </button>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                <button type="button" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
                   Add Call Log
                 </button>
               </div>
@@ -243,7 +244,7 @@ export default function Component() {
               />
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   )
