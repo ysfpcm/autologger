@@ -180,6 +180,11 @@ export default function Component() {
             <div className="text-gray-600 mb-2">
               Generations remaining today: {generationsLeft}
             </div>
+            {isGenerating && (
+              <div role="status" className="text-gray-600 mb-2">
+                Editing is paused while the call log is generated.
+              </div>
+            )}
             <div className="relative">
               <label className="block text-sm font-medium text-gray-900 mb-1">
                 Call Issue/Problem/Overall Subject
@@ -187,7 +192,8 @@ export default function Component() {
               <textarea
                 value={callLog.issue}
                 onChange={(e) => setCallLog({ ...callLog, issue: e.target.value })}
-                className="w-full h-32 p-2 border rounded text-gray-900 bg-white"
+                readOnly={isGenerating}
+                className="w-full h-32 p-2 border rounded text-gray-900 bg-white read-only:bg-gray-100"
               />
               <div className="absolute top-[-1.2rem] right-0 flex space-x-2 mr-1">
                 <motion.div
@@ -240,7 +246,8 @@ export default function Component() {
               <textarea
                 value={callLog.actionTaken}
                 onChange={(e) => setCallLog({ ...callLog, actionTaken: e.target.value })}
-                className="w-full h-32 p-2 border rounded text-gray-900 bg-white"
+                readOnly={isGenerating}
+                className="w-full h-32 p-2 border rounded text-gray-900 bg-white read-only:bg-gray-100"
               />
             </div>
           </div>
