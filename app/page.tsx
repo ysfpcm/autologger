@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import { createDailyGenerationLimit, DAILY_GENERATION_LIMIT, GENERATION_STORAGE_KEY } from './daily-generation-limit'
 
 const MOCK_CALL_LOGS = [
   {
@@ -41,10 +42,35 @@ export default function Component() {
   })
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationTimer, setGenerationTimer] = useState(7);
-  const [generationsLeft, setGenerationsLeft] = useState(7);
+  const [generationsLeft, setGenerationsLeft] = useState(DAILY_GENERATION_LIMIT);
+  const [isLimitReady, setIsLimitReady] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
   const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
   const generationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const generationLimit = useRef(createDailyGenerationLimit(null));
+
+  useEffect(() => {
+    try {
+      generationLimit.current = createDailyGenerationLimit(window.localStorage);
+    } catch {
+      generationLimit.current = createDailyGenerationLimit(null);
+    }
+
+    const refreshLimit = () => setGenerationsLeft(generationLimit.current.remaining());
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === GENERATION_STORAGE_KEY || event.key === null) refreshLimit();
+    };
+    refreshLimit();
+    setIsLimitReady(true);
+    const refreshInterval = setInterval(refreshLimit, 60000);
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('focus', refreshLimit);
+    return () => {
+      clearInterval(refreshInterval);
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('focus', refreshLimit);
+    };
+  }, []);
 
   useEffect(() => () => {
     if (generationInterval.current !== null) {
@@ -53,12 +79,14 @@ export default function Component() {
   }, []);
 
   const generateCallLog = () => {
-    if (generationInterval.current !== null) {
+    if (!isLimitReady || generationInterval.current !== null) {
       return;
     }
 
     // Check both conditions: generations left and if current log already has generation
-    if (generationsLeft <= 0) {
+    const remaining = generationLimit.current.remaining();
+    setGenerationsLeft(remaining);
+    if (remaining <= 0) {
       setShowWarning(true);
       setTimeout(() => setShowWarning(false), 3000);
       return;
@@ -84,7 +112,7 @@ export default function Component() {
         setGenerationTimer(7);
         const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
         setCallLog(MOCK_CALL_LOGS[randomIndex]);
-        setGenerationsLeft(prev => prev - 1);
+        setGenerationsLeft(generationLimit.current.consume());
         setHasGeneratedCurrentLog(true);
       } else {
         setGenerationTimer(secondsRemaining);
@@ -203,21 +231,23 @@ export default function Component() {
                   <button 
                     type="button"
                     onClick={generateCallLog} 
-                    disabled={isGenerating || hasGeneratedCurrentLog}
+                    disabled={!isLimitReady || isGenerating || hasGeneratedCurrentLog}
                     className={`
                       px-4 py-2 rounded
-                      ${(isGenerating || hasGeneratedCurrentLog)
+                      ${(!isLimitReady || isGenerating || hasGeneratedCurrentLog)
                         ? 'bg-gray-400 cursor-not-allowed'
                         : 'bg-green-500 hover:bg-green-600'
                       }
                       text-white
                     `}
                     title={
-                      isGenerating 
-                        ? "Generation in progress..."
-                        : hasGeneratedCurrentLog 
-                          ? "Already generated for this call log"
-                          : "Select to summarize call"
+                      !isLimitReady
+                        ? "Loading generation limit..."
+                        : isGenerating
+                          ? "Generation in progress..."
+                          : hasGeneratedCurrentLog
+                            ? "Already generated for this call log"
+                            : "Select to summarize call"
                     }
                   >
                     {isGenerating 

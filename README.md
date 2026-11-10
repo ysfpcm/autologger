@@ -6,7 +6,7 @@ Autologger is a call log management tool built using Next.js, React, TailwindCSS
 
 - **Generate Call Logs**: Automatically generate predefined call logs.
 - **Call Management**: Manage different types of customer calls including technical support, customer service, risk management, and ISO agent calls.
-- **Limited Call Log Generation**: Users are limited to generating call logs a specified number of times daily.
+- **Limited Call Log Generation**: The browser tracks seven generations per local day, including across reloads. Clearing browser storage resets the count; if storage is unavailable, the limit lasts only for the current page session.
 - **Responsive UI**: Designed with TailwindCSS for a seamless, responsive user experience.
 
 ## Technologies Used
