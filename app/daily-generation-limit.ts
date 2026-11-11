@@ -39,7 +39,8 @@ export function createDailyGenerationLimit(storage: Storage | null, now = () => 
     },
     consume() {
       const current = read();
-      cached = { ...current, count: Math.min(current.count + 1, DAILY_GENERATION_LIMIT) };
+      if (current.count >= DAILY_GENERATION_LIMIT) return null;
+      cached = { ...current, count: current.count + 1 };
       if (storage) {
         try {
           storage.setItem(GENERATION_STORAGE_KEY, JSON.stringify(cached));
