@@ -110,9 +110,16 @@ export default function Component() {
         }
         setIsGenerating(false);
         setGenerationTimer(7);
+        const remaining = generationLimit.current.consume();
+        if (remaining === null) {
+          setGenerationsLeft(0);
+          setShowWarning(true);
+          setTimeout(() => setShowWarning(false), 3000);
+          return;
+        }
         const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
         setCallLog(MOCK_CALL_LOGS[randomIndex]);
-        setGenerationsLeft(generationLimit.current.consume());
+        setGenerationsLeft(remaining);
         setHasGeneratedCurrentLog(true);
       } else {
         setGenerationTimer(secondsRemaining);
