@@ -23,7 +23,7 @@ Autologger is a call log management tool built using Next.js, React, TailwindCSS
 
 Ensure that you have the following installed:
 
-- [Node.js](https://nodejs.org/en/download/) (v14.x or later)
+- [Node.js](https://nodejs.org/en/download/) (v18.18.0 or later, as required by Next.js)
 - npm (comes with Node.js) or [yarn](https://classic.yarnpkg.com/en/docs/install) as a package manager.
 
 ### Installation
@@ -32,40 +32,39 @@ Ensure that you have the following installed:
 
    ```bash
    git clone https://github.com/ysfpcm/autologger.git
-Navigate to the project directory:
+   cd autologger
+   ```
 
-bash
-Copy code
-cd autologger
-Install dependencies:
+2. **Install dependencies** using npm:
 
-Using npm:
+   ```bash
+   npm install
+   ```
 
-bash
-Copy code
-npm install
-Or using yarn:
+   Or using yarn:
 
-bash
-Copy code
-yarn install
-Running the Development Server
-To start the development server, run the following command:
+   ```bash
+   yarn install
+   ```
 
-bash
-Copy code
+### Running the Development Server
+
+```bash
 npm run dev
+```
+
 The app will be available at http://localhost:3000.
 
-Building for Production
-To create a production build, run:
+### Building for Production
 
-bash
-Copy code
+```bash
 npm run build
-This will generate optimized static files for your application.
+npm run start
+```
 
-Deployment
+The first command creates an optimized production build; the second starts it.
+
+### Deployment
 You can easily deploy the app to Vercel using the Vercel CLI or the dashboard.
 
 Note:
