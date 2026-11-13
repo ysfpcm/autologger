@@ -191,10 +191,11 @@ export default function Component() {
               ].map((field, index) => (
                 <div key={index} className="flex">
                   <div className="w-1/2 bg-gray-100 p-2">
-                    <span className="text-gray-900 font-medium">{field.label}</span>
+                    <label htmlFor={`detail-${index}`} className="text-gray-900 font-medium">{field.label}</label>
                   </div>
                   <div className="w-1/2">
                     <input 
+                      id={`detail-${index}`}
                       defaultValue={field.value}
                       className="w-full p-2 border text-gray-900"
                     />
@@ -221,10 +222,11 @@ export default function Component() {
               </div>
             )}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-900 mb-1">
+              <label htmlFor="call-issue" className="block text-sm font-medium text-gray-900 mb-1">
                 Call Issue/Problem/Overall Subject
               </label>
               <textarea
+                id="call-issue"
                 value={callLog.issue}
                 onChange={(e) => setCallLog({ ...callLog, issue: e.target.value })}
                 readOnly={isGenerating}
@@ -277,10 +279,11 @@ export default function Component() {
               </div>
             </div>
             <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-900 mb-1">
+              <label htmlFor="call-resolution" className="block text-sm font-medium text-gray-900 mb-1">
                 Actions Taken/Resolution To Issue
               </label>
               <textarea
+                id="call-resolution"
                 value={callLog.actionTaken}
                 onChange={(e) => setCallLog({ ...callLog, actionTaken: e.target.value })}
                 readOnly={isGenerating}
