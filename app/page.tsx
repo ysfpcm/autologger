@@ -99,6 +99,11 @@ export default function Component() {
       return;
     }
 
+    if ((callLog.issue || callLog.actionTaken) &&
+        !window.confirm('Generating a call log will replace the existing issue and resolution. Continue?')) {
+      return;
+    }
+
     setIsGenerating(true);
     let secondsRemaining = 7;
     generationInterval.current = setInterval(() => {

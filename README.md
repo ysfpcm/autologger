@@ -76,7 +76,7 @@ Project Structure
 /components: Reusable UI components.
 /styles: Global styles and TailwindCSS configuration.
 Usage
-Generate Call Log: Click the "Generate Call Log" button to automatically generate a new call log with predefined issues and resolutions.
+Generate Call Log: Click the "Generate Call Log" button to automatically generate a new call log with predefined issues and resolutions. If either field already contains text, confirm before replacing it.
 Edit Call Log: Manually edit the issue or action taken for any generated call log.
 Limit Generations: Each user is limited to a set number of call log generations per day, after which a warning is displayed.
 Dependencies
