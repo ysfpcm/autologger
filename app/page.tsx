@@ -47,6 +47,7 @@ export default function Component() {
   const [showWarning, setShowWarning] = useState(false);
   const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
   const generationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const warningTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const generationLimit = useRef(createDailyGenerationLimit(null));
 
   useEffect(() => {
@@ -76,7 +77,21 @@ export default function Component() {
     if (generationInterval.current !== null) {
       clearInterval(generationInterval.current);
     }
+    if (warningTimeout.current !== null) {
+      clearTimeout(warningTimeout.current);
+    }
   }, []);
+
+  const showTemporaryWarning = () => {
+    if (warningTimeout.current !== null) {
+      clearTimeout(warningTimeout.current);
+    }
+    setShowWarning(true);
+    warningTimeout.current = setTimeout(() => {
+      setShowWarning(false);
+      warningTimeout.current = null;
+    }, 3000);
+  };
 
   const generateCallLog = () => {
     if (!isLimitReady || generationInterval.current !== null) {
@@ -87,15 +102,13 @@ export default function Component() {
     const remaining = generationLimit.current.remaining();
     setGenerationsLeft(remaining);
     if (remaining <= 0) {
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 3000);
+      showTemporaryWarning();
       return;
     }
 
     if (hasGeneratedCurrentLog) {
       // Show a different warning for attempting to regenerate same call log
-      setShowWarning(true);
-      setTimeout(() => setShowWarning(false), 3000);
+      showTemporaryWarning();
       return;
     }
 
@@ -118,8 +131,7 @@ export default function Component() {
         const remaining = generationLimit.current.consume();
         if (remaining === null) {
           setGenerationsLeft(0);
-          setShowWarning(true);
-          setTimeout(() => setShowWarning(false), 3000);
+          showTemporaryWarning();
           return;
         }
         const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
