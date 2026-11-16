@@ -44,7 +44,7 @@ export default function Component() {
   const [generationTimer, setGenerationTimer] = useState(7);
   const [generationsLeft, setGenerationsLeft] = useState(DAILY_GENERATION_LIMIT);
   const [isLimitReady, setIsLimitReady] = useState(false);
-  const [showWarning, setShowWarning] = useState(false);
+  const [warning, setWarning] = useState<'limit' | 'generated' | null>(null);
   const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
   const generationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const warningTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,7 +57,13 @@ export default function Component() {
       generationLimit.current = createDailyGenerationLimit(null);
     }
 
-    const refreshLimit = () => setGenerationsLeft(generationLimit.current.remaining());
+    const refreshLimit = () => {
+      const remaining = generationLimit.current.remaining();
+      setGenerationsLeft(remaining);
+      if (remaining > 0) {
+        setWarning((current) => current === 'limit' ? null : current);
+      }
+    };
     const onStorage = (event: StorageEvent) => {
       if (event.key === GENERATION_STORAGE_KEY || event.key === null) refreshLimit();
     };
@@ -82,13 +88,13 @@ export default function Component() {
     }
   }, []);
 
-  const showTemporaryWarning = () => {
+  const showTemporaryWarning = (reason: 'limit' | 'generated') => {
     if (warningTimeout.current !== null) {
       clearTimeout(warningTimeout.current);
     }
-    setShowWarning(true);
+    setWarning(reason);
     warningTimeout.current = setTimeout(() => {
-      setShowWarning(false);
+      setWarning(null);
       warningTimeout.current = null;
     }, 3000);
   };
@@ -102,13 +108,13 @@ export default function Component() {
     const remaining = generationLimit.current.remaining();
     setGenerationsLeft(remaining);
     if (remaining <= 0) {
-      showTemporaryWarning();
+      showTemporaryWarning('limit');
       return;
     }
 
     if (hasGeneratedCurrentLog) {
       // Show a different warning for attempting to regenerate same call log
-      showTemporaryWarning();
+      showTemporaryWarning('generated');
       return;
     }
 
@@ -131,7 +137,7 @@ export default function Component() {
         const remaining = generationLimit.current.consume();
         if (remaining === null) {
           setGenerationsLeft(0);
-          showTemporaryWarning();
+          showTemporaryWarning('limit');
           return;
         }
         const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
@@ -223,9 +229,9 @@ export default function Component() {
           </div>
 
           <div className="space-y-3 lg:space-y-4 relative">
-            {showWarning && (
+            {warning && (
               <div className="text-red-600 mb-2">
-                {generationsLeft <= 0 
+                {warning === 'limit'
                   ? "You have reached the maximum number of generations for today."
                   : "You have already generated content for this call log. Please submit or clear the form to generate a new one."}
               </div>
