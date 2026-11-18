@@ -70,11 +70,15 @@ You can easily deploy the app to Vercel using the Vercel CLI or the dashboard.
 Note:
 Ensure that the react and react-dom versions are compatible with other dependencies like framer-motion. For this project, use react@18.x.
 
-Project Structure
-/pages: Contains the main Next.js pages.
-/public: Static assets like images.
-/components: Reusable UI components.
-/styles: Global styles and TailwindCSS configuration.
+## Project Structure
+
+- `app/page.tsx`: Call log interface and generation controls.
+- `app/daily-generation-limit.ts`: Daily generation limit and browser storage handling.
+- `app/layout.tsx`: Root layout, fonts, and metadata.
+- `app/globals.css`: Global styles.
+- `public/`: Static assets like images.
+- `tailwind.config.ts`: TailwindCSS configuration.
+
 Usage
 Generate Call Log: Click the "Generate Call Log" button to automatically generate a new call log with predefined issues and resolutions. If either field already contains text, confirm before replacing it.
 Edit Call Log: Manually edit the issue or action taken for any generated call log.
