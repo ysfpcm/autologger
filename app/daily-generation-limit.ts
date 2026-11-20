@@ -16,15 +16,19 @@ export function createDailyGenerationLimit(storage: Storage | null, now = () => 
     if (storage) {
       try {
         const value = storage.getItem(GENERATION_STORAGE_KEY);
-        let saved: GenerationCount | null = null;
-        try {
-          saved = value ? JSON.parse(value) : null;
-        } catch {
-          saved = null;
+        if (value === null) {
+          cached = { date: today, count: 0 };
+        } else {
+          let saved: GenerationCount | null = null;
+          try {
+            saved = JSON.parse(value);
+          } catch {
+            saved = null;
+          }
+          if (saved?.date === today && Number.isInteger(saved.count) && saved.count >= 0) {
+            cached = { date: today, count: Math.min(saved.count, DAILY_GENERATION_LIMIT) };
+          }
         }
-        cached = saved?.date === today && Number.isInteger(saved.count) && saved.count >= 0
-          ? { date: today, count: Math.min(saved.count, DAILY_GENERATION_LIMIT) }
-          : { date: today, count: 0 };
       } catch {
         storage = null;
       }
