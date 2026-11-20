@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { createDailyGenerationLimit, DAILY_GENERATION_LIMIT, GENERATION_STORAGE_KEY } from './daily-generation-limit'
 
@@ -35,6 +35,31 @@ const MOCK_CALL_LOGS = [
   }
 ];
 
+const CALL_TYPES = [
+  { label: 'Tech Call', value: 'techCall' },
+  { label: 'Customer Service Call', value: 'customerServiceCall' },
+  { label: 'Risk Management', value: 'riskManagement' },
+  { label: 'Call From ISO/Agent', value: 'callFromISOAgent' }
+];
+
+const CALL_DETAILS = [
+  { label: 'Email Call? Yes Or No:', value: 'Yes' },
+  { label: 'Call Status:', value: 'New' },
+  { label: 'Call Date/Time:', value: '2024-10-25 3:58:29 PM' },
+  { label: 'Person Calling:', value: 'John Doe' },
+  { label: 'Contact Email Address For Follow Up:', value: 'john.doe@example.com' },
+  { label: 'Phone Back To Merchant For Follow-Up:', value: '123-456-7890' },
+  { label: 'Call Topic:', value: 'Technical Support Call' },
+  { label: 'CHECK TO ADD TASK FOR RETURN CALL/FOLLOW UP:', value: '' }
+];
+
+type SavedCallLog = {
+  callType: string;
+  details: { label: string; value: string }[];
+  issue: string;
+  actionTaken: string;
+};
+
 export default function Component() {
   const [callLog, setCallLog] = useState({
     issue: '',
@@ -46,6 +71,8 @@ export default function Component() {
   const [isLimitReady, setIsLimitReady] = useState(false);
   const [warning, setWarning] = useState<'limit' | 'generated' | null>(null);
   const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
+  const [savedLogs, setSavedLogs] = useState<SavedCallLog[]>([]);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const generationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const warningTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const generationLimit = useRef(createDailyGenerationLimit(null));
@@ -159,6 +186,26 @@ export default function Component() {
     setGenerationTimer(7);
     setCallLog({ issue: '', actionTaken: '' });
     setHasGeneratedCurrentLog(false);
+    setSubmissionError(null);
+  };
+
+  const addCallLog = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isGenerating) return;
+    if (!callLog.issue.trim() && !callLog.actionTaken.trim()) {
+      setSubmissionError('Enter an issue or resolution before adding a call log.');
+      return;
+    }
+
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const callType = CALL_TYPES.find((type) => type.value === data.get('callType'))?.label ?? '';
+    const details = CALL_DETAILS.map((detail, index) => ({
+      label: detail.label,
+      value: String(data.get(`detail-${index}`) ?? '')
+    }));
+    setSavedLogs((current) => [...current, { callType, details, ...callLog }]);
+    form.reset();
   };
 
   return (
@@ -168,7 +215,7 @@ export default function Component() {
           <h1 className="text-xl lg:text-2xl font-semibold">Electronic Payments (EPI) - View Call</h1>
         </header>
         
-        <form className="flex-1 p-3 lg:p-6" onReset={resetCallLog} onSubmit={(event) => event.preventDefault()}>
+        <form className="flex-1 p-3 lg:p-6" onReset={resetCallLog} onSubmit={addCallLog}>
           <div className="mb-4 lg:mb-6">
             <h2 className="text-lg lg:text-xl font-bold mb-2 text-gray-900">Merchant Info</h2>
             <div className="bg-gray-100 p-4 rounded">
@@ -181,37 +228,18 @@ export default function Component() {
           </div>
 
           <div className="bg-yellow-100 p-2 mb-4 lg:mb-6 flex space-x-4">
-            <label className="inline-flex items-center text-gray-900">
-              <input type="radio" name="callType" value="techCall" className="form-radio text-blue-600" defaultChecked />
-              <span className="ml-2">Tech Call</span>
-            </label>
-            <label className="inline-flex items-center text-gray-900">
-              <input type="radio" name="callType" value="customerServiceCall" className="form-radio text-blue-600" />
-              <span className="ml-2">Customer Service Call</span>
-            </label>
-            <label className="inline-flex items-center text-gray-900">
-              <input type="radio" name="callType" value="riskManagement" className="form-radio text-blue-600" />
-              <span className="ml-2">Risk Management</span>
-            </label>
-            <label className="inline-flex items-center text-gray-900">
-              <input type="radio" name="callType" value="callFromISOAgent" className="form-radio text-blue-600" />
-              <span className="ml-2">Call From ISO/Agent</span>
-            </label>
+            {CALL_TYPES.map((type, index) => (
+              <label key={type.value} className="inline-flex items-center text-gray-900">
+                <input type="radio" name="callType" value={type.value} className="form-radio text-blue-600" defaultChecked={index === 0} />
+                <span className="ml-2">{type.label}</span>
+              </label>
+            ))}
           </div>
 
           <div className="mb-4 lg:mb-6">
             <h2 className="text-lg lg:text-xl font-bold mb-2 text-gray-900">Details Submitted...</h2>
             <div className="space-y-0.5">
-              {[
-                { label: 'Email Call? Yes Or No:', value: 'Yes' },
-                { label: 'Call Status:', value: 'New' },
-                { label: 'Call Date/Time:', value: '2024-10-25 3:58:29 PM' },
-                { label: 'Person Calling:', value: 'John Doe' },
-                { label: 'Contact Email Address For Follow Up:', value: 'john.doe@example.com' },
-                { label: 'Phone Back To Merchant For Follow-Up:', value: '123-456-7890' },
-                { label: 'Call Topic:', value: 'Technical Support Call' },
-                { label: 'CHECK TO ADD TASK FOR RETURN CALL/FOLLOW UP:', value: '' }
-              ].map((field, index) => (
+              {CALL_DETAILS.map((field, index) => (
                 <div key={index} className="flex">
                   <div className="w-1/2 bg-gray-100 p-2">
                     <label htmlFor={`detail-${index}`} className="text-gray-900 font-medium">{field.label}</label>
@@ -219,6 +247,7 @@ export default function Component() {
                   <div className="w-1/2">
                     <input 
                       id={`detail-${index}`}
+                      name={`detail-${index}`}
                       defaultValue={field.value}
                       className="w-full p-2 border text-gray-900"
                     />
@@ -236,8 +265,12 @@ export default function Component() {
                   : "You have already generated content for this call log. Please submit or clear the form to generate a new one."}
               </div>
             )}
+            {submissionError && <div role="alert" className="text-red-600 mb-2">{submissionError}</div>}
             <div className="text-gray-600 mb-2">
               Generations remaining today: {generationsLeft}
+            </div>
+            <div role="status" className="text-gray-600 mb-2">
+              Added call logs: {savedLogs.length}. Logs are available only until this page is reloaded or closed.
             </div>
             {isGenerating && (
               <div role="status" className="text-gray-600 mb-2">
@@ -296,7 +329,7 @@ export default function Component() {
                 >
                   Clear Form
                 </button>
-                <button type="button" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                <button type="submit" disabled={isGenerating} className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-4 py-2 rounded">
                   Add Call Log
                 </button>
               </div>
@@ -315,6 +348,29 @@ export default function Component() {
             </div>
           </div>
         </form>
+        {savedLogs.length > 0 && (
+          <section className="p-3 lg:p-6 text-gray-900" aria-labelledby="saved-call-logs">
+            <h2 id="saved-call-logs" className="text-lg font-bold">Added Call Logs</h2>
+            <p>These call logs are available only until this page is reloaded or closed.</p>
+            {savedLogs.map((log, index) => (
+              <article key={index} className="mt-4 border rounded p-4">
+                <h3 className="font-semibold">Call Log {index + 1}: {log.callType}</h3>
+                <dl className="mt-2">
+                  {log.details.map((detail) => (
+                    <div key={detail.label}>
+                      <dt className="inline font-medium">{detail.label} </dt>
+                      <dd className="inline">{detail.value || '—'}</dd>
+                    </div>
+                  ))}
+                  <dt className="font-medium mt-2">Issue</dt>
+                  <dd className="whitespace-pre-wrap">{log.issue || '—'}</dd>
+                  <dt className="font-medium mt-2">Actions Taken</dt>
+                  <dd className="whitespace-pre-wrap">{log.actionTaken || '—'}</dd>
+                </dl>
+              </article>
+            ))}
+          </section>
+        )}
       </div>
     </div>
   )
