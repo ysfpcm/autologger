@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
+import { formatCallDate } from './call-date'
 import { createDailyGenerationLimit, DAILY_GENERATION_LIMIT, GENERATION_STORAGE_KEY } from './daily-generation-limit'
 
 const MOCK_CALL_LOGS = [
@@ -45,13 +46,15 @@ const CALL_TYPES = [
 const CALL_DETAILS = [
   { label: 'Email Call? Yes Or No:', value: 'Yes' },
   { label: 'Call Status:', value: 'New' },
-  { label: 'Call Date/Time:', value: '2024-10-25 3:58:29 PM' },
+  { label: 'Call Date/Time:', value: '' },
   { label: 'Person Calling:', value: 'John Doe' },
   { label: 'Contact Email Address For Follow Up:', value: 'john.doe@example.com' },
   { label: 'Phone Back To Merchant For Follow-Up:', value: '123-456-7890' },
   { label: 'Call Topic:', value: 'Technical Support Call' },
   { label: 'CHECK TO ADD TASK FOR RETURN CALL/FOLLOW UP:', value: '' }
 ];
+
+const CALL_DATE_INDEX = 2;
 
 type SavedCallLog = {
   callType: string;
@@ -73,9 +76,13 @@ export default function Component() {
   const [hasGeneratedCurrentLog, setHasGeneratedCurrentLog] = useState(false);
   const [savedLogs, setSavedLogs] = useState<SavedCallLog[]>([]);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [callDate, setCallDate] = useState('');
   const generationInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const warningTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const generationLimit = useRef(createDailyGenerationLimit(null));
+  useEffect(() => {
+    setCallDate(formatCallDate());
+  }, []);
 
   useEffect(() => {
     try {
@@ -178,6 +185,7 @@ export default function Component() {
   };
 
   const resetCallLog = () => {
+    setCallDate(formatCallDate());
     if (generationInterval.current !== null) {
       clearInterval(generationInterval.current);
       generationInterval.current = null;
@@ -248,7 +256,9 @@ export default function Component() {
                     <input 
                       id={`detail-${index}`}
                       name={`detail-${index}`}
-                      defaultValue={field.value}
+                      value={index === CALL_DATE_INDEX ? callDate : undefined}
+                      onChange={index === CALL_DATE_INDEX ? (event) => setCallDate(event.target.value) : undefined}
+                      defaultValue={index === CALL_DATE_INDEX ? undefined : field.value}
                       className="w-full p-2 border text-gray-900"
                     />
                   </div>

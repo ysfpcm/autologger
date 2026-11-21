@@ -82,6 +82,7 @@ Ensure that the react and react-dom versions are compatible with other dependenc
 Usage
 Generate Call Log: Click the "Generate Call Log" button to automatically generate a new call log with predefined issues and resolutions. If either field already contains text, confirm before replacing it.
 Edit Call Log: Manually edit the issue or action taken for any generated call log.
+Call Date/Time: Defaults to the current local date and time and can be edited. Clearing or adding a call log refreshes the default for the next call.
 Add Call Log: Enter an issue or resolution to add the current call details to the list on the page. Added logs are kept only until the page is reloaded or closed.
 Limit Generations: Each user is limited to a set number of call log generations per day, after which a warning is displayed.
 Dependencies
