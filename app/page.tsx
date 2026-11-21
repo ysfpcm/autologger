@@ -133,6 +133,13 @@ export default function Component() {
     }, 3000);
   };
 
+  const updateCallLog = (updatedLog: typeof callLog) => {
+    setCallLog(updatedLog);
+    if (updatedLog.issue.trim() || updatedLog.actionTaken.trim()) {
+      setSubmissionError(null);
+    }
+  };
+
   const generateCallLog = () => {
     if (!isLimitReady || generationInterval.current !== null) {
       return;
@@ -175,7 +182,7 @@ export default function Component() {
           return;
         }
         const randomIndex = Math.floor(Math.random() * MOCK_CALL_LOGS.length);
-        setCallLog(MOCK_CALL_LOGS[randomIndex]);
+        updateCallLog(MOCK_CALL_LOGS[randomIndex]);
         setGenerationsLeft(remaining);
         setHasGeneratedCurrentLog(true);
       } else {
@@ -294,7 +301,7 @@ export default function Component() {
               <textarea
                 id="call-issue"
                 value={callLog.issue}
-                onChange={(e) => setCallLog({ ...callLog, issue: e.target.value })}
+                onChange={(e) => updateCallLog({ ...callLog, issue: e.target.value })}
                 readOnly={isGenerating}
                 className="w-full h-32 p-2 border rounded text-gray-900 bg-white read-only:bg-gray-100"
               />
@@ -351,7 +358,7 @@ export default function Component() {
               <textarea
                 id="call-resolution"
                 value={callLog.actionTaken}
-                onChange={(e) => setCallLog({ ...callLog, actionTaken: e.target.value })}
+                onChange={(e) => updateCallLog({ ...callLog, actionTaken: e.target.value })}
                 readOnly={isGenerating}
                 className="w-full h-32 p-2 border rounded text-gray-900 bg-white read-only:bg-gray-100"
               />
