@@ -27,6 +27,8 @@ export function createDailyGenerationLimit(storage: Storage | null, now = () => 
           }
           if (saved?.date === today && Number.isInteger(saved.count) && saved.count >= 0) {
             cached = { date: today, count: Math.min(saved.count, DAILY_GENERATION_LIMIT) };
+          } else {
+            cached = { date: today, count: 0 };
           }
         }
       } catch {
