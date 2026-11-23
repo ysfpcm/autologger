@@ -276,7 +276,7 @@ export default function Component() {
 
           <div className="space-y-3 lg:space-y-4 relative">
             {warning && (
-              <div className="text-red-600 mb-2">
+              <div role="alert" className="text-red-600 mb-2">
                 {warning === 'limit'
                   ? "You have reached the maximum number of generations for today."
                   : "You have already generated content for this call log. Please submit or clear the form to generate a new one."}
